@@ -23,9 +23,9 @@ cat > "$INSTRUCTIONS_FILE" <<EOF
     "path": "tests/test_new_feature.py",
     "content": "def test_new_feature():\\n    # Test logic for new feature\\n    assert new_feature_function() == expected_result"
   }
-  // Add more instructions as needed
 ]
 EOF
+
 
 # Run the editor.py script with the instruction file
 python "$EDITOR_SCRIPT" "$INSTRUCTIONS_FILE"
