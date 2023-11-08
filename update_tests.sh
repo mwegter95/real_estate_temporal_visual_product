@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define project directories
-PROJECT_ROOT="/path/to/your/project"
+PROJECT_ROOT="./"
 TESTS_DIR="$PROJECT_ROOT/tests"
 
 # Function to insert landmarks if they don't exist
