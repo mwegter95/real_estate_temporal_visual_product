@@ -2,14 +2,13 @@
     {
         "instruction": "UpdateFile",
         "path": "tests/test_map_integration.py",
-        "landmarkId": "MAP-INTEGRATION-TEST",
-        "newContent": "it(initializes Google Maps API, () => { /* test code */ });"
+        "landmarkId": "MAP-INTEGRATION",
+        "newContent": "// TODO: Implement test logic for Google Maps API initialization"
     },
     {
         "instruction": "UpdateFile",
         "path": "tests/test_sunlight_paths.py",
-        "landmarkId": "SUNLIGHT-PATHS-TEST",
-        "newContent": "it(calculates sunlight paths correctly, () => { /* test code */ });"
-    },
-    // ... more test instructions
+        "landmarkId": "SUNLIGHT-PATHS",
+        "newContent": "// TODO: Implement test logic for modeling sunlight paths"
+    }
 ]

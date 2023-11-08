@@ -28,8 +28,7 @@ echo '[
         "path": "tests/test_sunlight_paths.py",
         "landmarkId": "SUNLIGHT-PATHS",
         "newContent": "// TODO: Implement test logic for modeling sunlight paths"
-    },
-    // ... more TODO instructions
+    }
 ]' > "$INSTRUCTION_FILE"
 
 # Run editor, commit TODO comments
