@@ -1,0 +1,14 @@
+[
+  {
+    "instruction": "UpdateFile",
+    "path": "tests/test_map_integration.py",
+    "landmarkId": "001-MAP-INIT",
+    "newContent": "def initialize_google_maps_api():\n    # Initialize Google Maps API logic here\n    pass"
+  },
+  {
+    "instruction": "CreateFile",
+    "path": "tests/test_new_feature.py",
+    "content": "def test_new_feature():\n    # Test logic for new feature\n    assert new_feature_function() == expected_result"
+  }
+  // Add more instructions as needed
+]
