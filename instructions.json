@@ -1,0 +1,17 @@
+[
+  {
+    "instruction": "CreateFile",
+    "path": "src/tests/map_integration.test.js",
+    "content": "// LANDMARK-START:MAP-INTEGRATION\n// Test cases for Google Maps API loading\n// LANDMARK-END:MAP-INTEGRATION"
+  },
+  {
+    "instruction": "CreateFile",
+    "path": "src/tests/sunlight_model.test.js",
+    "content": "// LANDMARK-START:SUNLIGHT-MODEL\n// Test cases for sunlight path modeling\n// LANDMARK-END:SUNLIGHT-MODEL"
+  },
+  {
+    "instruction": "CreateFile",
+    "path": "src/tests/ui_viewpoint.test.js",
+    "content": "// LANDMARK-START:UI-VIEWPOINT\n// Test cases for UI viewpoint selection\n// LANDMARK-END:UI-VIEWPOINT"
+  }
+]
