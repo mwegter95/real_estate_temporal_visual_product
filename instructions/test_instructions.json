@@ -1,0 +1,17 @@
+[
+    {
+        "instruction": "CreateFile",
+        "path": "tests/test_map_integration.py",
+        "content": "# LANDMARK-START:001-MAP-INIT\ndef test_initialize_google_maps_api():\n    assert False, 'Pending test for Google Maps API initialization'\n# LANDMARK-END:001-MAP-INIT\n\n# LANDMARK-START:002-MAP-UI\ndef test_place_map_in_ui():\n    assert False, 'Pending test for placing map in UI with controls'\n# LANDMARK-END:002-MAP-UI\n"
+    },
+    {
+        "instruction": "CreateFile",
+        "path": "tests/test_sunlight_paths.py",
+        "content": "# LANDMARK-START:003-SUNLIGHT-MODEL\ndef test_sunlight_model():\n    assert False, 'Pending test for sunlight paths modeling'\n# LANDMARK-END:003-SUNLIGHT-MODEL\n\n# LANDMARK-START:004-SUNLIGHT-SERVICE\ndef test_sunlight_service():\n    assert False, 'Pending test for sunlight data fetching service'\n# LANDMARK-END:004-SUNLIGHT-SERVICE\n"
+    },
+    {
+        "instruction": "CreateFile",
+        "path": "tests/test_ui_elements.py",
+        "content": "# LANDMARK-START:005-UI-VIEWPOINT\ndef test_ui_viewpoint_selector():\n    assert False, 'Pending test for UI viewpoint selector'\n# LANDMARK-END:005-UI-VIEWPOINT\n\n# LANDMARK-START:006-UI-TIMEPICKER\ndef test_ui_time_picker():\n    assert False, 'Pending test for UI time picker'\n# LANDMARK-END:006-UI-TIMEPICKER\n"
+    }
+]

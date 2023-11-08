@@ -1,0 +1,8 @@
+[
+            {
+                "instruction": "UpdateFile",
+                "path": "dummy_file.py",
+                "landmarkId": "DummyContent",
+                "newContent": "# LANDMARK-START:DummyContent\n# New content\n# LANDMARK-END:DummyContent"
+            }
+        ]

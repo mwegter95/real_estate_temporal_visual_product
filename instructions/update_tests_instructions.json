@@ -1,0 +1,38 @@
+[
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_map_integration.py",
+        "landmarkId": "001-MAP-INIT",
+        "newContent": "# LANDMARK-START:001-MAP-INIT\ndef test_initialize_google_maps_api():\n    # Your test logic here\n    pass # Replace with actual assertion\n# LANDMARK-END:001-MAP-INIT"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_map_integration.py",
+        "landmarkId": "002-MAP-UI",
+        "newContent": "# LANDMARK-START:002-MAP-UI\ndef test_place_map_in_ui():\n    # Your test logic here\n    pass # Replace with actual assertion\n# LANDMARK-END:002-MAP-UI"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_sunlight_paths.py",
+        "landmarkId": "003-SUNLIGHT-MODEL",
+        "newContent": "# LANDMARK-START:003-SUNLIGHT-MODEL\ndef test_sunlight_model():\n    # Your test logic here\n    pass # Replace with actual assertion\n# LANDMARK-END:003-SUNLIGHT-MODEL"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_sunlight_paths.py",
+        "landmarkId": "004-SUNLIGHT-SERVICE",
+        "newContent": "# LANDMARK-START:004-SUNLIGHT-SERVICE\ndef test_sunlight_service():\n    # Your test logic here\n    pass # Replace with actual assertion\n# LANDMARK-END:004-SUNLIGHT-SERVICE"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_ui_elements.py",
+        "landmarkId": "005-UI-VIEWPOINT",
+        "newContent": "# LANDMARK-START:005-UI-VIEWPOINT\ndef test_ui_viewpoint_selector():\n    # Your test logic here\n    pass # Replace with actual assertion\n# LANDMARK-END:005-UI-VIEWPOINT"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_ui_elements.py",
+        "landmarkId": "006-UI-TIMEPICKER",
+        "newContent": "# LANDMARK-START:006-UI-TIMEPICKER\ndef test_ui_time_picker():\n    # Your test logic here\n    pass # Replace with actual assertion\n# LANDMARK-END:006-UI-TIMEPICKER"
+    }
+]

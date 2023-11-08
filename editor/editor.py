@@ -5,12 +5,12 @@ import os
 import uuid
 import argparse
 import subprocess
+import json
 
 class LandmarkParser:
     # Regex patterns for landmarks
-    LANDMARK_START_PATTERN = re.compile(r'// LANDMARK-START:(\w+)')
-    LANDMARK_END_PATTERN = re.compile(r'// LANDMARK-END:(\w+)')
-
+    LANDMARK_START_PATTERN = re.compile(r'# LANDMARK-START:(\w+)')
+    LANDMARK_END_PATTERN = re.compile(r'# LANDMARK-END:(\w+)')
 
     def find_complex_landmarks(self, content):
         """Find landmarks and their start/end positions in the content."""
@@ -22,23 +22,21 @@ class LandmarkParser:
         # Debug: print the number of lines read
         print(f"Number of lines in content: {len(lines)}")
 
-
         for idx, line in enumerate(lines):
             print(f"Processing line {idx}: {line}")  # Debug: print each line being processed
             start_match = self.LANDMARK_START_PATTERN.match(line)
             end_match = self.LANDMARK_END_PATTERN.match(line)
 
             if start_match:
-                lm_id, description = start_match.groups()
-                start_positions[lm_id] = (idx, description)
+                lm_id = start_match.group(1)
+                start_positions[lm_id] = idx
                 print(f"Found start landmark: {lm_id}")  # Debug: print when a start landmark is found
             elif end_match:
                 lm_id = end_match.group(1)
-                start_line, description = start_positions.pop(lm_id, (None, None))
+                start_line = start_positions.pop(lm_id, None)
                 if start_line is not None:
                     landmarks.append({
                         'id': lm_id,
-                        'description': description,
                         'start_line': start_line,
                         'end_line': idx
                     })
@@ -55,30 +53,37 @@ class FileEditor:
         self.parser = parser
         self.masterlist_keeper = masterlist_keeper
 
-    def apply_changes(self, content, changes):
+    def apply_changes(self, content, change):
         landmarks = self.parser.find_complex_landmarks(content)
         lines = content.split('\n')
+        updated = False  # Flag to check if updates have been made
 
-        for change in changes:
-            lm_id, action, new_content = change
-            lm = next((lm for lm in landmarks if lm['id'] == lm_id), None)
-            if not lm:
-                continue
+        # Directly access the keys from the change dictionary
+        lm_id = change['landmarkId']
+        action = change['instruction']
+        new_content = change['newContent']
 
-            if action == 'replace':
-                # Extract the lines before and after the landmark to preserve them.
-                before = lines[:lm['start_line'] + 1]
-                after = lines[lm['end_line']:]
-                # Combine them with the new content.
-                lines = before + [new_content] + after
-            
-            # After applying changes, update the master list
-        updated_landmarks = self.parser.find_complex_landmarks(content)
-        for lm in updated_landmarks:
-            self.masterlist_keeper.update_landmark(lm['id'], lm)
+        lm = next((lm for lm in landmarks if lm['id'] == lm_id), None)
+        if not lm:
+            print(f"Landmark {lm_id} not found.")  # Debugging
+            return content
 
-        return '\n'.join(lines)
-    
+        if action == 'UpdateFile':
+            print(f"Replacing content for landmark {lm_id}.")  # Debugging
+            before = lines[:lm['start_line']]
+            after = lines[lm['end_line'] + 1:]
+            lines = before + [new_content.strip()] + after
+            updated = True
+
+        if updated:
+            updated_content = '\n'.join(lines)
+            print(f"Updated content:\n{updated_content}")  # Debugging
+            return updated_content
+        else:
+            print("No updates applied.")  # Debugging
+            return content
+
+
     def create_file(self, file_path, content):
         full_path = os.path.join(self.project_root, file_path)
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
@@ -95,19 +100,20 @@ class FileEditor:
             instructions_content = file.read()
         self.apply_instructions(instructions_content)
 
-    def apply_instructions(self, instructions_content):
-        # Split the content into individual instructions
-        instruction_blocks = instructions_content.split('/* END-INSTRUCTION */')
-        for block in instruction_blocks:
-            if 'INSTRUCTION: UpdateFile' in block:
-                file_path = self._extract_path(block)
+    def apply_instructions(self, instructions):
+        for instruction in instructions:
+            if instruction['instruction'] == 'UpdateFile':
+                file_path = instruction['path']
                 full_file_path = os.path.join(self.project_root, file_path)
                 with open(full_file_path, 'r') as file:
                     content = file.read()
-                self._handle_update_file_instruction(block, content)
-            if 'INSTRUCTION: CreateFile' in block:
-                self._handle_create_file_instruction(block)
-            # Add more conditions for other instruction types
+                updated_content = self.apply_changes(content, instruction)  # Pass the single instruction dictionary
+                with open(full_file_path, 'w') as file:
+                    file.write(updated_content)
+            elif instruction['instruction'] == 'CreateFile':
+                file_path = instruction['path']
+                content = instruction.get('content', '')  # Default to empty string if 'content' key is not present
+                self.create_file(file_path, content)
 
     def _extract_path(self, block):
         # Extract the file path from the instruction block
@@ -290,7 +296,7 @@ class FileEditor:
     
     
 
-def commit_change(self, file_path, change_description):
+def commit_change(file_path, change_description):
     """Commit a file change to the git repository."""
     try:
         # Check if the file is tracked in git
@@ -301,9 +307,9 @@ def commit_change(self, file_path, change_description):
         # Commit the change
         commit_message = f"Update {file_path}: {change_description}"
         subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+        print(f"Successfully committed changes for {file_path}: {change_description}")  # Debug: print successful commit
     except subprocess.CalledProcessError as e:
         print(f"Failed to commit changes: {e}")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process DSL instructions for file editing.')
@@ -311,26 +317,33 @@ if __name__ == "__main__":
     
     # Add optional arguments for specifying the project root
     parser.add_argument('--root', action='store_true', help='Use the project root for file changes.')
-    parser.add_argument('--react', action='store_true', default=True, help='Use the React app root for file changes.')
+    parser.add_argument('--react', action='store_true', help='Use the React app root for file changes.')
 
     args = parser.parse_args()
 
-    # Determine the absolute path to the directory where editor.py is located
-    editor_dir = os.path.dirname(os.path.abspath(__file__))
-
     # Set the project_root based on the provided arguments
     if args.root:
-        # If --root is specified, use the directory one level up from editor_dir
-        project_root = os.path.dirname(editor_dir)
+        # If --root is specified, use the current directory as the project root
+        project_root = os.getcwd()
+        print(f"Using the current directory as the project root: {project_root}")
     elif args.react:
-        # If --react is specified or by default, use the life_assistant_react/src directory
-        project_root = os.path.join(editor_dir, '../life_assistant_react/src')
+        # If --react is specified, use the real_estate_temporal_visual_react/src directory as the project root
+        project_root = os.path.join(os.getcwd(), 'real_estate_temporal_visual_react', 'src')
+        print(f"Using the React app root for file changes: {project_root}")
+    else:
+        # Default to using the current directory as the project root if no flags are provided
+        project_root = os.getcwd()
+        print(f"No specific root flag provided, using the current directory as the project root: {project_root}")
 
-    print(f"The project root is set to: {project_root}")
     # Instantiate FileEditor with the appropriate project_root
     parser_instance = LandmarkParser()
-    masterlist_keeper = LandmarkMasterlistKeeper()
+    masterlist_keeper = LandmarkMasterlistKeeper(project_root)
     file_editor = FileEditor(project_root, parser_instance, masterlist_keeper)
 
-    # Execute instructions from the .js file
-    file_editor.execute_js_instructions(args.instruction_file)
+    # Load the instructions from the .js file
+    with open(args.instruction_file, 'r') as file:
+        instructions = json.load(file)
+    print(f"Loaded instructions: {instructions}")  # Debugging: print loaded instructions
+
+    # Process the instructions
+    file_editor.apply_instructions(instructions)

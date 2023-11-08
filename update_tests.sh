@@ -1,92 +1,78 @@
 #!/bin/bash
 
-# Define project directories
-PROJECT_ROOT="./"
-TESTS_DIR="$PROJECT_ROOT/tests"
+# Define project root directory and editor script path
+PROJECT_ROOT=$(pwd)
+EDITOR_SCRIPT="${PROJECT_ROOT}/editor/editor.py"
 
-# Function to insert landmarks if they don't exist
-function insert_landmark_if_absent() {
-    local file=$1
-    local landmark=$2
+# Create JSON file with instructions
+INSTRUCTION_FILE="${PROJECT_ROOT}/instructions.json"
 
-    # Check if the landmark start is already in the file
-    if ! grep -q "LANDMARK-START:$landmark" "$file"; then
-        # Use awk to insert the landmark at the beginning of the file
-        awk -v lm="// LANDMARK-START:$landmark" 'BEGIN{print lm}{print}' "$file" > tmp && mv tmp "$file"
-    fi
-
-    # Check if the landmark end is already in the file
-    if ! grep -q "LANDMARK-END:$landmark" "$file"; then
-        # Use awk to insert the landmark at the end of the file
-        awk -v lm="// LANDMARK-END:$landmark" '{print}END{print lm}' "$file" > tmp && mv tmp "$file"
-    fi
+# Function to run editor.py and commit changes
+run_editor_and_commit() {
+    local message=$1
+    python "$EDITOR_SCRIPT" "$INSTRUCTION_FILE" --root
+    git add -A
+    git commit -m "$message"
 }
 
-# Insert landmarks into test files
-insert_landmark_if_absent "$TESTS_DIR/test_editor.py" "TestEditor"
-insert_landmark_if_absent "$TESTS_DIR/test_file_editor.py" "TestFileEditor"
-insert_landmark_if_absent "$TESTS_DIR/test_landmark_masterlist_keeper.py" "TestLandmarkMasterlistKeeper"
-
-# Function to write instruction file for updating a test file
-function write_test_update_instruction() {
-    local file=$1
-    local landmark=$2
-    local content=$3
-    local instruction_file=$4
-
-    # Escape backslashes and newlines in content
-    local escaped_content=$(echo "$content" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/\//\\\//g')
-
-    # Write the instruction file
-    cat << EOF > $instruction_file
-[
+# Step 1: Add TODO comments
+echo '[
     {
         "instruction": "UpdateFile",
-        "path": "$file",
-        "landmarkId": "$landmark",
-        "newContent": "$escaped_content"
-    }
-]
-EOF
-}
+        "path": "tests/test_map_integration.py",
+        "landmarkId": "MAP-INTEGRATION",
+        "newContent": "// TODO: Implement test logic for Google Maps API initialization"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_sunlight_paths.py",
+        "landmarkId": "SUNLIGHT-PATHS",
+        "newContent": "// TODO: Implement test logic for modeling sunlight paths"
+    },
+    // ... more TODO instructions
+]' > "$INSTRUCTION_FILE"
 
-# Update test_editor.py
-write_test_update_instruction \
-    "test_editor.py" \
-    "TestEditor" \
-    "class TestEditor(unittest.TestCase):\n    def test_dummy(self):\n        self.assertTrue(True)" \
-    "$PROJECT_ROOT/update_test_editor_instructions.js"
+# Run editor, commit TODO comments
+run_editor_and_commit "Add TODO comments for tests"
 
-# Update test_file_editor.py
-write_test_update_instruction \
-    "test_file_editor.py" \
-    "TestFileEditor" \
-    "class TestFileEditor(unittest.TestCase):\n    def test_dummy(self):\n        self.assertTrue(True)" \
-    "$PROJECT_ROOT/update_test_file_editor_instructions.js"
+# Step 2: Replace TODOs with actual code
+echo '[
+    {
+        "instruction": "UpdateFile",
+        "path": "src/map_integration.js",
+        "landmarkId": "MAP-INTEGRATION",
+        "newContent": "function initializeGoogleMapsAPI() { /* actual initialization code */ }"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "src/sunlight_paths.js",
+        "landmarkId": "SUNLIGHT-PATHS",
+        "newContent": "function calculateSunlightPaths() { /* actual calculation code */ }"
+    },
+    // ... more code replacement instructions
+]' > "$INSTRUCTION_FILE"
 
-# Update test_landmark_masterlist_keeper.py
-write_test_update_instruction \
-    "test_landmark_masterlist_keeper.py" \
-    "TestLandmarkMasterlistKeeper" \
-    "class TestLandmarkMasterlistKeeper(unittest.TestCase):\n    def test_dummy(self):\n        self.assertTrue(True)" \
-    "$PROJECT_ROOT/update_test_landmark_masterlist_keeper_instructions.js"
+# Run editor, commit actual code implementation
+run_editor_and_commit "Implement Google Maps API and Sunlight Paths"
 
-# Function to process instruction file with editor.py and commit
-function process_instructions() {
-    local instruction_file=$1
-    local commit_message=$2
+# Step 3: Add tests
+echo '[
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_map_integration.py",
+        "landmarkId": "MAP-INTEGRATION-TEST",
+        "newContent": "it('initializes Google Maps API', () => { /* test code */ });"
+    },
+    {
+        "instruction": "UpdateFile",
+        "path": "tests/test_sunlight_paths.py",
+        "landmarkId": "SUNLIGHT-PATHS-TEST",
+        "newContent": "it('calculates sunlight paths correctly', () => { /* test code */ });"
+    },
+    // ... more test instructions
+]' > "$INSTRUCTION_FILE"
 
-    # Call editor.py to process the instruction file
-    python $EDITOR_SCRIPT $instruction_file
+# Run editor, commit tests
+run_editor_and_commit "Add tests for Map Integration and Sunlight Paths"
 
-    # Commit the changes
-    git add .
-    git commit -m "$commit_message"
-}
-
-# Process each instruction file
-process_instructions "$PROJECT_ROOT/update_test_editor_instructions.js" "Update test_editor with basic test cases"
-process_instructions "$PROJECT_ROOT/update_test_file_editor_instructions.js" "Update test_file_editor with basic test cases"
-process_instructions "$PROJECT_ROOT/update_test_landmark_masterlist_keeper_instructions.js" "Update test_landmark_masterlist_keeper with basic test cases"
-
-echo "Test files have been updated and changes committed."
+echo "All updates have been processed and committed."

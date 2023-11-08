@@ -5,8 +5,9 @@ import json
 import os
 
 class LandmarkMasterlistKeeper:
-    def __init__(self, masterlist_file='masterlist.log'):
-        self.masterlist_file = masterlist_file
+    def __init__(self, project_root, masterlist_file='masterlist.log'):
+        # Ensure the masterlist file path is constructed properly
+        self.masterlist_file = os.path.join(project_root, masterlist_file)
         self.masterlist = self._load_masterlist()
 
     def _load_masterlist(self):
