@@ -1,8 +1,8 @@
 [
     {
         "instruction": "UpdateFile",
-        "path": "test_editor.py",
+        "path": "tests/test_editor.py",
         "landmarkId": "TestEditor",
-        "newContent": "class TestEditor(unittest.TestCase):\n    def test_dummy(self):\n        self.assertTrue(True)"
+        "newContent": "# LANDMARK-START:TestEditor\nimport unittest\n\nclass TestEditor(unittest.TestCase):\n    def test_sample(self):\n        self.assertTrue(True)\n# LANDMARK-END:TestEditor"
     }
 ]
