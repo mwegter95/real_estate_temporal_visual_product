@@ -1,15 +1,15 @@
 [
     {
         "instruction": "UpdateFile",
-        "path": "tests/test_map_integration.py",
+        "path": "src/map_integration.js",
         "landmarkId": "MAP-INTEGRATION",
-        "newContent": "// TODO: Implement test logic for Google Maps API initialization"
+        "newContent": "function initializeGoogleMapsAPI() { /* actual initialization code */ }"
     },
     {
         "instruction": "UpdateFile",
-        "path": "tests/test_sunlight_paths.py",
+        "path": "src/sunlight_paths.js",
         "landmarkId": "SUNLIGHT-PATHS",
-        "newContent": "// TODO: Implement test logic for modeling sunlight paths"
+        "newContent": "function calculateSunlightPaths() { /* actual calculation code */ }"
     },
-    // ... more TODO instructions
+    // ... more code replacement instructions
 ]
